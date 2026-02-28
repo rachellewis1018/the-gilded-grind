@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Realm of Financialia (Retro)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#0b1020;
+      --panel:#121a33;
+      --panel2:#0f1530;
+      --text:#e8f0ff;
+      --muted:#9fb3d9;
+      --accent:#7cf7c2;
+      --warn:#ffd166;
+      --danger:#ff5c7a;
+      --border:#2a3766;
+      --shadow:#00000080;
+      --px: "Press Start 2P", system-ui, sans-serif;
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      background: radial-gradient(900px 600px at 20% 0%, #18245a, var(--bg));
+      color:var(--text);
+      font-family:var(--px);
+      line-height:1.55;
+      letter-spacing:0.2px;
+    }
+    .wrap{ max-width:1080px; margin:0 auto; padding:20px; }
+    .topbar{
+      display:flex; gap:12px; flex-wrap:wrap; align-items:center; justify-content:space-between;
+      padding:14px 14px;
+      border:4px solid var(--border);
+      background: linear-gradient(180deg, var(--panel), var(--panel2));
+      box-shadow: 0 12px 0 var(--shadow);
+      border-radius:14px;
+    }
+    .title{
+      font-size:14px;
+      display:flex; flex-direction:column; gap:6px;
+    }
+    .subtitle{ color:var(--muted); font-size:10px; }
+    .pillrow{ display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+    .pill{
+      padding:10px 12px;
+      border:3px solid var(--border);
+      background:#0c1433;
+      border-radius:999px;
+      font-size:10px;
+      box-shadow: 0 8px 0 var(--shadow);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap:14px;
+      margin-top:14px;
+    }
+    .card{
+      grid-column: span 6;
+      padding:14px;
+      border:4px solid var(--border);
+      background: linear-gradient(180deg, var(--panel), var(--panel2));
+      box-shadow: 0 12px 0 var(--shadow);
+      border-radius:14px;
+      min-height: 140px;
+    }
+    .card h2{
+      margin:0 0 10px;
+      font-size:12px;
+    }
+    .small{ color:var(--muted); font-size:10px; }
+    .row{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+    .stat{
+      display:flex; flex-direction:column; gap:6px;
+      padding:10px 12px;
+      border:3px solid var(--border);
+      background:#0c1433;
+      border-radius:12px;
+      box-shadow: 0 8px 0 var(--shadow);
+      min-width: 220px;
+      flex:1;
+    }
+    .stat .label{ color:var(--muted); font-size:10px; }
+    .stat .value{ font-size:14px; }
+    .bar{
+      height:14px;
+      border:3px solid var(--border);
+      border-radius:10px;
+      background:#0a0f25;
+      overflow:hidden;
+      box-shadow: inset 0 0 0 2px #00000055;
+    }
+    .fill{ height:100%; width:0%; background: var(--accent); }
+    .fill.warn{ background: var(--warn); }
+    .fill.danger{ background: var(--danger); }
+
+    .btnrow{ display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+    button{
+      font-family:var(--px);
+      font-size:10px;
+      padding:10px 10px;
+      border:3px solid var(--border);
+      background:#0c1433;
+      color:var(--text);
+      border-radius:12px;
+      cursor:pointer;
+      box-shadow: 0 8px 0 var(--shadow);
+      transition: transform 0.05s ease;
+    }
+    button:active{ transform: translateY(3px); box-shadow: 0 5px 0 var(--shadow); }
+    input, textarea{
+      font-family:var(--px);
+      font-size:10px;
+      padding:10px;
+      border:3px solid var(--border);
+      background:#0c1433;
+      color:var(--text);
+      border-radius:12px;
+      width:100%;
+    }
+
+    .card.span12{ grid-column: span 12; }
+    .card.span4{ grid-column: span 4; }
+    .card.span8{ grid-column: span 8; }
+
+    .quests{ display:flex; flex-direction:column; gap:10px; margin-top:8px; }
+    .quest{
+      display:flex; gap:10px; align-items:flex-start;
+      padding:10px 12px;
+      border:3px solid var(--border);
+      background:#0c1433;
+      border-radius:12px;
+      box-shadow: 0 8px 0 var(--shadow);
+    }
+    .quest input[type="checkbox"]{ width:18px; height:18px; margin-top:2px; }
+    .quest .qtext{ font-size:10px; }
+    .quest .meta{ color:var(--muted); font-size:9px; margin-top:6px; }
+
+    .log{
+      font-size:10px;
+      border:3px dashed var(--border);
+      border-radius:12px;
+      padding:10px;
+      background:#0a0f25;
+      min-height:88px;
+      white-space:pre-wrap;
+    }
+
+    .footer{ margin-top:14px; color:var(--muted); font-size:9px; text-align:center; }
+
+    @media (max-width: 900px){
+      .card{ grid-column: span 12; }
+      .card.span4, .card.span8{ grid-column: span 12; }
+      .stat{ min-width: 0; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="title">
+        <div>🏰 REALM OF FINANCIALIA</div>
+        <div class="subtitle">RETRO GUILD CO-OP • auto-saves • no spreadsheets harmed</div>
+      </div>
+      <div class="pillrow">
+        <div class="pill" id="pillLevel">LVL 1</div>
+        <div class="pill" id="pillXP">XP 0</div>
+        <div class="pill" id="pillStreak">STREAK 0</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>🪙 THE HOARD</h2>
+        <div class="row">
+          <div class="stat">
+            <div class="label">TOTAL GOLD (SAVINGS)</div>
+            <div class="value">$<span id="gold">0</span></div>
+            <div class="small">Add/subtract after transfers or spend decisions.</div>
+          </div>
+          <div class="stat">
+            <div class="label">FUN CHEST</div>
+            <div class="value">$<span id="fun">0</span></div>
+            <div class="small">Guilt-free loot. Use it proudly.</div>
+          </div>
+        </div>
+        <div class="btnrow">
+          <button onclick="adjust('gold', 50)">+ $50 Gold</button>
+          <button onclick="adjust('gold', -50)">- $50 Gold</button>
+          <button onclick="adjust('fun', 20)">+ $20 Fun</button>
+          <button onclick="adjust('fun', -20)">- $20 Fun</button>
+          <button onclick="grantXP(50)">+50 XP (Meeting Held)</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>🐉 BOSS: DEBT DRAGON</h2>
+        <div class="row">
+          <div class="stat">
+            <div class="label">HP REMAINING</div>
+            <div class="value">$<span id="bossHP">0</span> / $<span id="bossMax">0</span></div>
+            <div class="bar" aria-label="Boss health bar"><div class="fill danger" id="bossBar"></div></div>
+            <div class="small">Paying debt = damage. When HP hits 0… victory screen.</div>
+          </div>
+        </div>
+        <div class="btnrow">
+          <button onclick="damageBoss(100)">Deal $100 Damage</button>
+          <button onclick="damageBoss(250)">Deal $250 Damage</button>
+          <button onclick="damageBoss(500)">Deal $500 Damage</button>
+          <button onclick="resetBoss()">Set / Edit Boss HP</button>
+        </div>
+      </div>
+
+      <div class="card span8">
+        <h2>🏰 MAIN QUEST: CASTLE PROGRESS</h2>
+        <div class="row">
+          <div class="stat">
+            <div class="label">GOAL PROGRESS</div>
+            <div class="value"><span id="castlePct">0</span>%</div>
+            <div class="bar"><div class="fill" id="castleBar"></div></div>
+            <div class="small">$<span id="castleNow">0</span> / $<span id="castleGoal">0</span></div>
+          </div>
+        </div>
+        <div class="btnrow">
+          <button onclick="adjust('castleNow', 100)">+ $100 Toward Castle</button>
+          <button onclick="adjust('castleNow', -100)">- $100 (oops)</button>
+          <button onclick="editCastle()">Set / Edit Castle Goal</button>
+        </div>
+      </div>
+
+      <div class="card span4">
+        <h2>🎲 RANDOM ENCOUNTER</h2>
+        <div class="small">Roll once per week for chaos (or blessings).</div>
+        <div class="btnrow">
+          <button onclick="rollEncounter()">ROLL D6</button>
+          <button onclick="clearLog()">Clear Log</button>
+        </div>
+        <div class="log" id="log"></div>
+      </div>
+
+      <div class="card span12">
+        <h2>📜 QUEST LOG (3–5 MAX FOR LOOT GOBLINS)</h2>
+        <div class="small">Ticking quests grants XP. Keep it light. Keep it winnable.</div>
+
+        <div class="quests" id="quests"></div>
+
+        <div class="btnrow">
+          <button onclick="addQuest()">+ Add Quest</button>
+          <button onclick="resetWeek()">✅ End Week (Streak +1)</button>
+          <button onclick="exportState()">Export Save</button>
+          <button onclick="importState()">Import Save</button>
+          <button onclick="factoryReset()">Factory Reset</button>
+        </div>
+        <div class="small" style="margin-top:10px;">
+          Tip: Export/Import lets you move your save between laptops (still no server needed).
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      Saves automatically in your browser. If you clear browser data, you’ll lose the save (use Export as backup).
+    </div>
+  </div>
+
+<script>
+/**
+ * EDIT STARTING VALUES HERE (first run only).
+ * After you use the app, it will load from localStorage instead.
+ */
+const DEFAULT_STATE = {
+  gold: 2500,
+  fun: 120,
+  xp: 0,
+  level: 1,
+  streak: 0,
+  bossHP: 3200,
+  bossMax: 3200,
+  castleNow: 1500,
+  castleGoal: 8000,
+  quests: [
+    { text: "Cook at home 3 nights", done: false, xp: 80 },
+    { text: "No impulse buys (24hr rule)", done: false, xp: 120 },
+    { text: "Transfer $X to savings", done: false, xp: 150 }
+  ],
+  log: ""
+};
+
+const KEY = "financialia_save_v1";
+
+let state = load();
+
+function load(){
+  const raw = localStorage.getItem(KEY);
+  if(!raw) { localStorage.setItem(KEY, JSON.stringify(DEFAULT_STATE)); return structuredClone(DEFAULT_STATE); }
+  try { return JSON.parse(raw); } catch { return structuredClone(DEFAULT_STATE); }
+}
+function save(){ localStorage.setItem(KEY, JSON.stringify(state)); render(); }
+
+function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
+
+function currency(n){ return Math.round(n).toLocaleString(); }
+
+function grantXP(amount){
+  state.xp += amount;
+  // simple leveling: every 500 XP -> +1 level
+  const newLevel = Math.floor(state.xp / 500) + 1;
+  if(newLevel > state.level){
+    log(`✨ LEVEL UP! You reached LVL ${newLevel}. (+${amount} XP)`);
+    state.level = newLevel;
+  } else {
+    log(`+${amount} XP`);
+  }
+  save();
+}
+
+function adjust(field, amount){
+  state[field] = (state[field] ?? 0) + amount;
+  if(field === "gold" || field === "fun" || field === "castleNow"){
+    state[field] = Math.max(0, state[field]);
+  }
+  log(`${amount >= 0 ? "➕" : "➖"} ${field} ${amount >= 0 ? "+" : ""}${amount}`);
+  save();
+}
+
+function damageBoss(amount){
+  state.bossHP = Math.max(0, state.bossHP - amount);
+  grantXP( Math.min(200, Math.floor(amount/2)) ); // XP scales lightly with damage
+  log(`⚔️ Dealt $${currency(amount)} damage to the Debt Dragon.`);
+  if(state.bossHP === 0){
+    log("🏆 VICTORY! The Debt Dragon is defeated. Loot drops: peace of mind.");
+  }
+  save();
+}
+
+function resetBoss(){
+  const hp = prompt("Set Debt Dragon HP remaining (number):", state.bossHP);
+  const max = prompt("Set Debt Dragon MAX HP (number):", state.bossMax);
+  if(hp === null || max === null) return;
+  state.bossHP = Math.max(0, Number(hp) || 0);
+  state.bossMax = Math.max(0, Number(max) || 0);
+  save();
+}
+
+function editCastle(){
+  const now = prompt("Castle progress so far (number):", state.castleNow);
+  const goal = prompt("Castle goal total (number):", state.castleGoal);
+  if(now === null || goal === null) return;
+  state.castleNow = Math.max(0, Number(now) || 0);
+  state.castleGoal = Math.max(1, Number(goal) || 1);
+  save();
+}
+
+function rollEncounter(){
+  const roll = Math.floor(Math.random()*6) + 1;
+  const outcomes = {
+    1: { text:"👺 Expense Goblin ambush! -$100 Gold", gold:-100, xp:30 },
+    2: { text:"🥂 Social Invite ambush! -$60 Gold (but morale +1)", gold:-60, xp:20 },
+    3: { text:"🔧 Appliance scare! -$200 Gold (stability tested)", gold:-200, xp:60 },
+    4: { text:"✨ Cashback blessing! +$50 Gold", gold:+50, xp:40 },
+    5: { text:"💰 Found discount loot! +$25 Gold", gold:+25, xp:30 },
+    6: { text:"🛌 Peaceful week. +$0 Gold, +80 XP for sheer restraint", gold:0, xp:80 }
+  };
+  const o = outcomes[roll];
+  state.gold = Math.max(0, state.gold + o.gold);
+  log(`🎲 Rolled ${roll}: ${o.text}`);
+  grantXP(o.xp);
+  save();
+}
+
+function log(msg){
+  const line = `• ${msg}`;
+  state.log = (state.log ? state.log + "\n" : "") + line;
+  // keep log from growing forever
+  const lines = state.log.split("\n");
+  if(lines.length > 30) state.log = lines.slice(lines.length - 30).join("\n");
+}
+
+function clearLog(){ state.log = ""; save(); }
+
+function addQuest(){
+  const text = prompt("Quest text:");
+  if(!text) return;
+  const xp = prompt("XP reward (suggest 50–200):", "100");
+  state.quests.push({ text, done:false, xp: Math.max(0, Number(xp) || 100) });
+  save();
+}
+
+function toggleQuest(i){
+  const q = state.quests[i];
+  q.done = !q.done;
+  if(q.done){
+    log(`✅ Quest complete: ${q.text} (+${q.xp} XP)`);
+    grantXP(q.xp);
+  } else {
+    log(`↩️ Quest un-done: ${q.text} (no XP refund, sorry)`);
+  }
+  save();
+}
+
+function resetWeek(){
+  // streak up, reset quest completion
+  state.streak += 1;
+  state.quests = state.quests.map(q => ({...q, done:false}));
+  log(`📅 Week closed. Streak is now ${state.streak}. New week, new loot.`);
+  save();
+}
+
+function exportState(){
+  const data = JSON.stringify(state, null, 2);
+  navigator.clipboard.writeText(data).then(() => {
+    alert("Save copied to clipboard! Paste it somewhere safe (Notes/Drive).");
+  }).catch(() => {
+    prompt("Copy this save manually:", data);
+  });
+}
+
+function importState(){
+  const pasted = prompt("Paste your saved JSON here:");
+  if(!pasted) return;
+  try{
+    const obj = JSON.parse(pasted);
+    // minimal validation
+    state = {...structuredClone(DEFAULT_STATE), ...obj};
+    save();
+    alert("Imported!");
+  } catch(e){
+    alert("That didn’t look like valid JSON. Try again.");
+  }
+}
+
+function factoryReset(){
+  if(!confirm("Reset EVERYTHING back to defaults?")) return;
+  state = structuredClone(DEFAULT_STATE);
+  save();
+}
+
+function render(){
+  // header pills
+  document.getElementById("pillLevel").textContent = `LVL ${state.level}`;
+  document.getElementById("pillXP").textContent = `XP ${state.xp}`;
+  document.getElementById("pillStreak").textContent = `STREAK ${state.streak}`;
+
+  // gold / fun
+  document.getElementById("gold").textContent = currency(state.gold);
+  document.getElementById("fun").textContent = currency(state.fun);
+
+  // boss
+  document.getElementById("bossHP").textContent = currency(state.bossHP);
+  document.getElementById("bossMax").textContent = currency(state.bossMax);
+  const bossPct = state.bossMax ? (state.bossHP / state.bossMax) * 100 : 0;
+  const bossBar = document.getElementById("bossBar");
+  bossBar.style.width = clamp(bossPct, 0, 100) + "%";
+  bossBar.classList.toggle("danger", bossPct < 35);
+  bossBar.classList.toggle("warn", bossPct >= 35 && bossPct < 70);
+
+  // castle
+  document.getElementById("castleNow").textContent = currency(state.castleNow);
+  document.getElementById("castleGoal").textContent = currency(state.castleGoal);
+  const cPct = state.castleGoal ? (state.castleNow / state.castleGoal) * 100 : 0;
+  document.getElementById("castlePct").textContent = Math.floor(clamp(cPct, 0, 999));
+  document.getElementById("castleBar").style.width = clamp(cPct, 0, 100) + "%";
+
+  // log
+  document.getElementById("log").textContent = state.log || "• No encounters logged yet.";
+
+  // quests
+  const qWrap = document.getElementById("quests");
+  qWrap.innerHTML = "";
+  state.quests.forEach((q, i) => {
+    const div = document.createElement("div");
+    div.className = "quest";
+    div.innerHTML = `
+      <input type="checkbox" ${q.done ? "checked" : ""} />
+      <div>
+        <div class="qtext">${escapeHtml(q.text)}</div>
+        <div class="meta">Reward: ${q.xp} XP</div>
+      </div>
+    `;
+    div.querySelector("input").addEventListener("change", () => toggleQuest(i));
+    qWrap.appendChild(div);
+  });
+}
+
+function escapeHtml(str){
+  return String(str)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+render();
+</script>
+</body>
+</html>
