@@ -274,7 +274,7 @@
  * EDIT STARTING VALUES HERE (first run only).
  * After you use the app, it will load from localStorage instead.
  */
- const SAVE_API_URL = "PASTE_YOUR_WEB_APP_URL_HERE";
+ const SAVE_API_URL = "https://script.google.com/macros/s/AKfycbyT3SqHYPuffl8JuOLA1QygFY-YGMf3j-hAph0ZYr8UmMsiWj4qb5wp5tpQLmm65wZkpFA.exec";
 const SAVE_KEY = "THE_GILDED_GRIND_123"; 
 const DEFAULT_STATE = {
   gold: 2500,
@@ -296,14 +296,56 @@ const DEFAULT_STATE = {
 
 const KEY = "financialia_save_v1";
 
-let state = load();
+let state = structuredClone(DEFAULT_STATE);
 
-function load(){
-  const raw = localStorage.getItem(KEY);
-  if(!raw) { localStorage.setItem(KEY, JSON.stringify(DEFAULT_STATE)); return structuredClone(DEFAULT_STATE); }
-  try { return JSON.parse(raw); } catch { return structuredClone(DEFAULT_STATE); }
+(async function init() {
+  try {
+    const raw = await loadRemote();       // JSON string from Sheet
+    const obj = JSON.parse(raw || "{}");
+    state = mergeState(obj);
+    log("☁️ Cloud save loaded.");
+  } catch (e) {
+    log(`⚠️ Could not load cloud save. Using defaults. (${e.message})`);
+    state = structuredClone(DEFAULT_STATE);
+  }
+  render();
+})();
+
+async function loadRemote() {
+  const url = `${SAVE_API_URL}?key=${encodeURIComponent(SAVE_KEY)}`;
+  const res = await fetch(url);
+  const data = await res.json();
+  if (!data.ok) throw new Error(data.error || "Load failed");
+  return data.state; // string JSON
 }
-function save(){ localStorage.setItem(KEY, JSON.stringify(state)); render(); }
+async function saveRemote() {
+  const body = new URLSearchParams();
+  body.set("key", SAVE_KEY);
+  body.set("state", JSON.stringify(state));
+
+  const res = await fetch(SAVE_API_URL, {
+    method: "POST",
+    body
+  });
+  const data = await res.json();
+  if (!data.ok) throw new Error(data.error || "Save failed");
+}
+
+function mergeState(loadedObj) {
+  // Merge loaded state onto defaults so you can add new features later safely
+  return { ...structuredClone(DEFAULT_STATE), ...loadedObj };
+}
+
+// Debounced autosave (so it doesn’t spam saves every click)
+let saveTimer = null;
+function save() {
+  render();
+  if (saveTimer) clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => {
+    try { await saveRemote(); }
+    catch (e) { log(`⚠️ Cloud save failed (offline?): ${e.message}`); render(); }
+  }, 400);
+}
 
 function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
 
